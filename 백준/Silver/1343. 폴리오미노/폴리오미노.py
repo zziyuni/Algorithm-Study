@@ -1,30 +1,25 @@
 board = input().strip()
 
-poly = board.split('.')
-
-poly = list(filter(lambda x: x != '', poly))
-
-
-def check_cover(p):
-    if len(p) % 4 == 0:
-        return 'AAAA' * (len(p) // 4)
-    elif len(p) % 2 == 0:
-        return 'AAAA' * (len(p) // 4) + 'BB' * (len(p) % 4 // 2)
-    return False
-
-
-pos = 0
-i = 0
+cnt = 0
 ans = ''
-while i < len(board):
-    if board[i] != '.':
-        if not check_cover(poly[pos]):
+for b in board:
+    if b == 'X':
+        cnt += 1
+        if cnt == 4:
+            ans += 'AAAA'
+            cnt = 0
+    else:
+        if cnt == 2:
+            ans += 'BB'
+        elif cnt != 0:
             ans = -1
             break
-        ans += check_cover(poly[pos])
-        i += len(poly[pos])
-        pos += 1
-    else:
         ans += '.'
-        i += 1
+        cnt = 0
+
+if cnt == 2:
+    ans += 'BB'
+    cnt = 0
+if cnt != 0:
+    ans = -1
 print(ans)
