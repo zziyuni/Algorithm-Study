@@ -5,14 +5,6 @@ input = sys.stdin.readline
 T = int(input())
 
 
-def get_prefix_sum(a):
-    prefix = [0] * len(a)
-    prefix[0] = a[0]
-    for i in range(1, len(a)):
-        prefix[i] = prefix[i - 1] + a[i]
-    return prefix
-
-
 def max_subarray_sum(arr):
     max_sum = arr[0]
     current_sum = arr[0]
