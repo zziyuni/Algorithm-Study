@@ -1,18 +1,17 @@
-from itertools import permutations
-
+def backtracking(cur, visited,dungeons):
+    global answer
+    updated = False
+    for i in range(len(dungeons)):
+        min_fatigue, use_fatigue = dungeons[i]
+        if cur >= min_fatigue and i not in visited :
+            updated = True
+            backtracking(cur-use_fatigue,visited|{i},dungeons)
+    if not updated:
+        answer = max(answer,len(visited))
+        
+answer = -1    
 def solution(k, dungeons):
+    global answer
     answer = -1
-    pairs = permutations(dungeons,len(dungeons))
-    for p in pairs:
-        cnt = 0
-        cur = k
-        for f in p:
-            min_fatigue, use_fatigue = f
-            if cur < min_fatigue:
-                continue
-            else:
-                cur -= use_fatigue
-                cnt += 1
-        answer = max(answer,cnt)
-    
+    backtracking(k,set(),dungeons)
     return answer
