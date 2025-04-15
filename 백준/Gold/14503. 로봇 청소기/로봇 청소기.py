@@ -1,78 +1,48 @@
 import sys
-from collections import deque
 
 input = sys.stdin.readline
 
-directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
 
-def is_empty(x, y):
-    for direction in directions:
-        nx = x + direction[0]
-        ny = y + direction[1]
-        if 0 <= nx < N and 0 <= ny < M:
-            if rooms[nx][ny] == 0:
-                return True
-    return False
-
-
-def back(x, y, di):
-    if di == 0:
-        return x + 1, y
-    if di == 1:
-        return x, y - 1
-    if di == 2:
-        return x - 1, y
-    if di == 3:
-        return x, y + 1
-
-
-def rotate_90(x, y, di):
-    if di == 0:
-        if y - 1 >= 0 and rooms[x][y - 1] == 0:
-            return x, y - 1, 3
+def robot(r, c):
+    global clean, x, y, d, answer
+    if not clean[r][c]:
+        clean[r][c] = True
+        answer += 1
+    flag = False
+    for i in range(4):
+        nr = r + directions[i][0]
+        nc = c + directions[i][1]
+        if 0 <= nr < N and 0 <= nc < M and rooms[nr][nc] == 0 and not clean[nr][nc]:
+            flag = True  # 청소안한 칸이 있음
+    if flag:
+        d = (d - 1) % 4
+        nr = r + directions[d][0]
+        nc = c + directions[d][1]
+        if 0 <= nr < N and 0 <= nc < M and rooms[nr][nc] == 0 and not clean[nr][nc]:
+            x = nr
+            y = nc
+    else:
+        nr = r - directions[d][0]
+        nc = c - directions[d][1]
+        if 0 <= nr < N and 0 <= nc < M and rooms[nr][nc] == 0:
+            x = nr
+            y = nc
         else:
-            return x, y, 3
-
-    if di == 1:
-        if x - 1 >= 0 and rooms[x - 1][y] == 0:
-            return x - 1, y, 0
-        else:
-            return x, y, 0
-    if di == 2:
-        if y + 1 < M and rooms[x][y + 1] == 0:
-            return x, y + 1, 1
-        else:
-            return x, y, 1
-    if di == 3:
-        if x + 1 < N and rooms[x + 1][y] == 0:
-            return x + 1, y, 2
-        else:
-            return x, y, 2
-
-
-def clean_room(a, b, di):
-    queue = deque([(a, b, di)])
-    cnt = 0
-    while queue:
-        x, y, direction = queue.popleft()
-        if rooms[x][y] == 0:
-            cnt += 1
-            rooms[x][y] = 2
-        if not is_empty(x, y):
-            nx, ny = back(x, y, direction)
-            if nx < 0 or ny < 0 or nx >= N or ny >= M:
-                return cnt
-            if rooms[nx][ny] == 1:
-                return cnt
-            queue.append((nx, ny, direction))
-        else:
-            nx, ny, direction = rotate_90(x, y, direction)
-            queue.append((nx, ny, direction))
+            return False
+    return True
 
 
 N, M = map(int, input().split())
-r, c, d = map(int, input().split())
+x, y, d = map(int, input().split())
 rooms = list(list(map(int, input().split())) for _ in range(N))
+clean = [[False] * M for _ in range(N)]
+answer = 0
+while True:
 
-print(clean_room(r, c, d))
+    res = robot(x, y)
+    if not res:
+        break
+
+print(answer)
